@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
-from st_copy_to_clipboard import st_copy_to_clipboard  # ✅ Komponen salin clipboard
+import pyperclip
 
 # Fungsi translate
 def translate_day(day_en):
@@ -18,6 +18,7 @@ def translate_month(month_en):
     }
     return bulan.get(month_en, month_en)
 
+# Konfigurasi halaman
 st.set_page_config(page_title="Laporan Sensor", layout="centered")
 st.title("📡 Laporan Harian Sensor Stageof Balikpapan")
 
@@ -89,7 +90,33 @@ On Duty {data_shift['shift']}"""
     laporan += f"\n\nJumlah gempa di sekitar wilayah Kalimantan tercatat saat kami bertugas sebanyak {jumlah_gempa} kali"
 
     st.markdown("### 📝 Hasil Laporan:")
-    st.text_area("Laporan", laporan, height=300)
+    text_area = st.text_area("Laporan", laporan, height=300, key="laporan_textarea")
 
-    # ✅ Gunakan tombol copy ke clipboard
-    st_copy_to_clipboard(laporan, "📋 Salin ke Clipboard") 
+    # Tombol salin dengan fallback
+    if st.button("📋 Salin ke Clipboard"):
+        try:
+            pyperclip.copy(laporan)
+            st.success("✅ Laporan berhasil disalin ke clipboard!")
+        except Exception as e:
+            st.error(f"❌ Gagal menyalin otomatis. Silakan salin manual dari text area di atas.")
+            st.markdown("""
+            **Cara menyalin manual:**
+            1. Klik pada text area di atas
+            2. Tekan Ctrl+A (untuk memilih semua)
+            3. Tekan Ctrl+C (untuk menyalin)
+            4. Tekan Enter untuk keluar dari mode seleksi
+            """)
+
+    # Alternatif textarea yang auto-select
+    st.markdown("""
+    <style>
+    .auto-select {
+        width: 100%;
+        height: 300px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    </style>
+    <textarea class="auto-select" onclick="this.select()" readonly>{laporan}</textarea>
+    """, unsafe_allow_html=True)
