@@ -89,34 +89,28 @@ On Duty {data_shift['shift']}"""
 
     laporan += f"\n\nJumlah gempa di sekitar wilayah Kalimantan tercatat saat kami bertugas sebanyak {jumlah_gempa} kali"
 
+    # Menampilkan laporan dalam text area yang bisa disalin
     st.markdown("### 📝 Hasil Laporan:")
-    text_area = st.text_area("Laporan", laporan, height=300, key="laporan_textarea")
+    st.text_area("Laporan", laporan, height=300, key="laporan_textarea")
 
-    # Tombol salin dengan fallback
-    if st.button("📋 Salin ke Clipboard"):
-        try:
-            pyperclip.copy(laporan)
-            st.success("✅ Laporan berhasil disalin ke clipboard!")
-        except Exception as e:
-            st.error(f"❌ Gagal menyalin otomatis. Silakan salin manual dari text area di atas.")
-            st.markdown("""
-            **Cara menyalin manual:**
-            1. Klik pada text area di atas
-            2. Tekan Ctrl+A (untuk memilih semua)
-            3. Tekan Ctrl+C (untuk menyalin)
-            4. Tekan Enter untuk keluar dari mode seleksi
-            """)
-
-    # Alternatif textarea yang auto-select
-    st.markdown("""
-    <style>
-    .auto-select {
-        width: 100%;
-        height: 300px;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-    </style>
-    <textarea class="auto-select" onclick="this.select()" readonly>{laporan}</textarea>
-    """, unsafe_allow_html=True)
+    # Membuat kolom untuk tombol salin dan petunjuk
+    col1, col2 = st.columns([1, 3])
+    
+    with col1:
+        if st.button("📋 Salin ke Clipboard", key="copy_button"):
+            try:
+                pyperclip.copy(laporan)
+                st.success("✅ Laporan berhasil disalin!")
+            except Exception as e:
+                st.error("❌ Gagal menyalin otomatis")
+    
+    with col2:
+        st.markdown("""
+        <div style="background-color:#f0f2f6; padding:10px; border-radius:5px;">
+        <b>Petunjuk:</b> Jika tombol salin tidak bekerja:<br>
+        1. Klik pada text area di atas<br>
+        2. Tekan <kbd>Ctrl+A</kbd> (pilih semua)<br>
+        3. Tekan <kbd>Ctrl+C</kbd> (salin)<br>
+        4. Tekan <kbd>Enter</kbd> untuk keluar
+        </div>
+        """, unsafe_allow_html=True)
