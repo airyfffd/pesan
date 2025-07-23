@@ -92,4 +92,4 @@ On Duty {data_shift['shift']}"""
     st.text_area("Laporan", laporan, height=300)
 
     # ✅ Gunakan tombol copy ke clipboard
-    st_copy_to_clipboard(laporan, "📋 Salin ke Clipboard")
+    st_copy_to_clipboard(laporan, "📋 Salin ke Clipboard") 
