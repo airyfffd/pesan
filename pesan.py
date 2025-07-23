@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
-import pyperclip
+import io
 
 # Fungsi translate
 def translate_day(day_en):
@@ -89,28 +89,56 @@ On Duty {data_shift['shift']}"""
 
     laporan += f"\n\nJumlah gempa di sekitar wilayah Kalimantan tercatat saat kami bertugas sebanyak {jumlah_gempa} kali"
 
-    # Menampilkan laporan dalam text area yang bisa disalin
     st.markdown("### 📝 Hasil Laporan:")
-    st.text_area("Laporan", laporan, height=300, key="laporan_textarea")
-
-    # Membuat kolom untuk tombol salin dan petunjuk
-    col1, col2 = st.columns([1, 3])
     
-    with col1:
-        if st.button("📋 Salin ke Clipboard", key="copy_button"):
-            try:
-                pyperclip.copy(laporan)
-                st.success("✅ Laporan berhasil disalin!")
-            except Exception as e:
-                st.error("❌ Gagal menyalin otomatis")
+    # Text area yang otomatis ter-select
+    st.text_area("Laporan", laporan, height=300, key="laporan_text")
     
-    with col2:
-        st.markdown("""
-        <div style="background-color:#f0f2f6; padding:10px; border-radius:5px;">
-        <b>Petunjuk:</b> Jika tombol salin tidak bekerja:<br>
-        1. Klik pada text area di atas<br>
-        2. Tekan <kbd>Ctrl+A</kbd> (pilih semua)<br>
-        3. Tekan <kbd>Ctrl+C</kbd> (salin)<br>
-        4. Tekan <kbd>Enter</kbd> untuk keluar
-        </div>
-        """, unsafe_allow_html=True)
+    # Solusi 1: Download sebagai file teks
+    st.download_button(
+        label="⬇️ Download Laporan",
+        data=laporan,
+        file_name=f"laporan_sensor_{tanggal_shift.strftime('%Y%m%d')}.txt",
+        mime="text/plain",
+        help="Download laporan sebagai file teks yang bisa dibuka di editor apapun"
+    )
+    
+    # Solusi 2: Text area dengan auto-select menggunakan HTML/JS
+    st.markdown("""
+    <style>
+    .copy-box {
+        width: 100%;
+        height: 300px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        background-color: #f9f9f9;
+    }
+    </style>
+    
+    <div class="copy-box" id="copyContent" onclick="this.select()">{laporan}</div>
+    
+    <button onclick="copyToClipboard()" style="margin-top: 10px; padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+    📋 Salin ke Clipboard
+    </button>
+    
+    <script>
+    function copyToClipboard() {
+        const copyText = document.getElementById("copyContent");
+        copyText.select();
+        document.execCommand("copy");
+        alert("Laporan berhasil disalin!");
+    }
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # Solusi 3: Petunjuk salin manual yang jelas
+    st.markdown("""
+    ### ❗ Jika tombol salin tidak bekerja:
+    1. Klik pada kotak teks di atas
+    2. Tekan **Ctrl+A** (untuk memilih semua teks)
+    3. Tekan **Ctrl+C** (untuk menyalin)
+    4. Tekan **Esc** atau klik di luar kotak untuk keluar
+    """)
