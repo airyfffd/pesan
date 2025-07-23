@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime, timedelta
+from st_copy_to_clipboard import st_copy_to_clipboard  # ✅ Komponen salin clipboard
 
 # Fungsi translate
 def translate_day(day_en):
@@ -90,14 +91,5 @@ On Duty {data_shift['shift']}"""
     st.markdown("### 📝 Hasil Laporan:")
     st.text_area("Laporan", laporan, height=300)
 
-    # Tombol Salin via HTML + JS
-    laporan_js = laporan.replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n")
-    st.markdown(
-        f"""
-        <button onclick="navigator.clipboard.writeText(`{laporan_js}`)" 
-                style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-            📋 Salin ke Clipboard
-        </button>
-        """,
-        unsafe_allow_html=True
-    )
+    # ✅ Gunakan tombol copy ke clipboard
+    st_copy_to_clipboard(laporan, "📋 Salin ke Clipboard")
